@@ -1,5 +1,7 @@
 package com.mybtclient;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -7,11 +9,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity {
-
 
 
     @Override
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        checkBlueToothEnable();
 
     }
 
@@ -49,5 +52,44 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+
+    /********* 启动检测蓝牙是否开启     *********/
+    /********* 2019-11-24            *********/
+    private void checkBlueToothEnable() {
+
+        final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if (bluetoothAdapter == null) {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("错误")
+                    .setMessage("您的设备不支持蓝牙")
+                    .create();
+            dialog.show();
+            return;
+        }
+
+        if (!bluetoothAdapter.isEnabled()) {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("提示")
+                    .setMessage("蓝牙设备未开启，请打开蓝牙!")
+                    .setPositiveButton("打开蓝牙", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
+                        }
+                    })
+                    .setNegativeButton("退出", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .create();
+            dialog.show();
+            return;
+        }
     }
 }
