@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">MyBTClient</string>
+    <string name="action_settings">打开蓝牙</string>
+
+    <string name="clear">清空数据</string>
+    <string name="hex_show">16进制显示</string>
+    <string name="send">发送</string>
+    <string name="edit_hint">请输入控制代码</string>
+
+
+    <string name="go">前进</string>
+    <string name="back">后退</string>
+    <string name="turn_left">左转</string>
+    <string name="turn_right">右转</string>
+    <string name="stop">停止</string>
+</resources>
