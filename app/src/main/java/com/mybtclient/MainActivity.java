@@ -8,6 +8,8 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,8 +24,31 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        checkBlueToothEnable();
 
+        checkBlueToothEnable();
+//        android:screenOrientation="portrait"  //强制竖屏
+//        android:screenOrientation=“landscape”//强制横屏
+        Button btn_portrait = findViewById(R.id.btn_portrait);
+        Button btn_landscape = findViewById(R.id.btn_landscape);
+
+
+        btn_landscape.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LandscapeActivity.class);
+                startActivity(intent);
+                LogUtils.d("启动横屏");
+            }
+        });
+
+        btn_portrait.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PortraitActivity.class);
+                startActivity(intent);
+                LogUtils.d("启动竖屏");
+            }
+        });
     }
 
     @Override
@@ -58,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
     /********* 启动检测蓝牙是否开启     *********/
     /********* 2019-11-24            *********/
+
     private void checkBlueToothEnable() {
 
         final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
