@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         unregisterReceiver(receiver);
     }
 
-/********* 启动检测蓝牙是否开启     *********/
+    /********* 启动检测蓝牙是否开启     *********/
     /********* 2019-11-24            *********/
 
     private void checkBlueToothEnable() {
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     })
                     .create();
             dialog.show();
-            return;
+            //return;
         }
     }
 
@@ -219,16 +219,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         e.printStackTrace();
                     }
                 } else {//客户端连接线程
-//                    clientThread = new ClientThread(MainActivity.this,device);
                     clientThread = ClientThread.getInstance(MainActivity.this, device);
-//                    clientThread.start();
+
                     nextIntent = new Intent(MainActivity.this, PortraitActivity.class);
 //                    mBluetoothDevice mDevice = new mBluetoothDevice(device);
 //                    nextIntent.putExtra("device",mDevice);
                     //startActivity(intent);
-//                    bundle.
+
 //                    intent.putExtras();
-                    //clientThread.write("02");
+
                 }
             }
         });
