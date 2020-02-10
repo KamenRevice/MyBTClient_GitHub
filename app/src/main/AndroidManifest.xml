@@ -21,6 +21,7 @@
         <activity
             android:name=".PortraitActivity"
             android:label="@string/title_activity_lunch"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
