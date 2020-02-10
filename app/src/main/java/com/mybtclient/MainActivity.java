@@ -33,10 +33,8 @@ import java.util.List;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    //获取蓝牙适配器
-    public BluetoothAdapter bluetoothAdapter;
+    //xml 中 UI资源
     Button openBtn, searchBtn, btn_portrait, btn_landscape;
-    ListView show_lv;
     //保存搜索到的设备信息
     private List<String> bluetoothDevices = new ArrayList<>();
     //ListView的字符串数组适配器
@@ -46,8 +44,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<String> showList = new ArrayList<>();
     private IntentFilter intentFilter;
     private BluetoothReceiver receiver;
+    ListView show_lv;
     private Intent nextIntent;
-    private ClientThread clientThread;
+    //获取蓝牙适配器
+    private BluetoothAdapter bluetoothAdapter;
+    //存放选中的蓝牙设备
+    private mBluetoothDevice mBluetoothDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        android:screenOrientation=“landscape”//强制横屏
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -99,9 +100,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         unregisterReceiver(receiver);
     }
 
-    /********* 启动检测蓝牙是否开启     *********/
-    /********* 2019-11-24            *********/
-
+    /**
+     * @param
+     * @brief 启动检测蓝牙是否开启
+     * @time
+     */
     private void checkBlueToothEnable() {
 
         if (bluetoothAdapter == null) {
@@ -137,7 +140,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
+    /**
+     * @param
+     * @brief 按键点击事件
+     * @date 2020-02-11 下午 12:04
+     */
     @Override
     public void onClick(View v) {
         isGrantedPermission(this);
@@ -171,17 +178,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.btn_landscape:
-                Intent intent1 = new Intent(MainActivity.this, LandscapeActivity.class);
-                startActivity(intent1);
-//                String ms = "01";
-//                clientThread.sendData(ms.getBytes());
+                nextIntent = new Intent(MainActivity.this, LandscapeActivity.class);
+                nextIntent.putExtra("device", mBluetoothDevice);
+                startActivity(nextIntent);
                 LogUtils.d("启动横屏");
                 break;
             case R.id.btn_portrait:
-                if (clientThread != null) {
-                    Intent intent2 = new Intent(MainActivity.this, PortraitActivity.class);
-                    startActivity(intent2);
-                }
+                nextIntent = new Intent(MainActivity.this, PortraitActivity.class);
+                nextIntent.putExtra("device", mBluetoothDevice);
+                startActivity(nextIntent);
                 LogUtils.d("启动竖屏");
                 break;
             default:
@@ -190,6 +195,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    /**
+     * @param
+     * @brief 运行时权限检测
+     * @date 2020-02-11 下午 12:04
+     */
     private boolean isGrantedPermission(MainActivity mainActivity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mainActivity.checkSelfPermission(
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -202,6 +212,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
+    /**
+     * @bief 蓝牙设备选中
+     * @date 2020-02-11 下午 12:01
+     */
     private void setListener() {
         show_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -211,28 +225,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     bluetoothAdapter.cancelDiscovery();
                 }
                 BluetoothDevice device = devicesList.get(position);
-                if (device.getBondState() == BluetoothDevice.BOND_NONE) {//如果设备未绑定
+                //如果设备未绑定
+                if (device.getBondState() == BluetoothDevice.BOND_NONE) {
                     try {
                         Method method = BluetoothDevice.class.getMethod("createBond");
                         method.invoke(device);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                } else {//客户端连接线程
-                    clientThread = ClientThread.getInstance(MainActivity.this, device);
-
-                    nextIntent = new Intent(MainActivity.this, PortraitActivity.class);
-//                    mBluetoothDevice mDevice = new mBluetoothDevice(device);
-//                    nextIntent.putExtra("device",mDevice);
-                    //startActivity(intent);
-
-//                    intent.putExtras();
-
+                } else {
+                    mBluetoothDevice.setName(device.getName());
+                    mBluetoothDevice.setAddress(device.getAddress());
+                    LogUtils.d(" Intent数据传送开始--" + mBluetoothDevice.getName() + "--//////" + mBluetoothDevice.getAddress());
+                    // nextIntent.putExtra("device",mBluetoothDevice);
                 }
             }
         });
     }
 
+    /**
+     * @param
+     * @brief 初始化 View
+     * @date 2020-02-11 下午 12:02
+     */
     void init() {
         openBtn = findViewById(R.id.open_bt);
         searchBtn = findViewById(R.id.search_bt);
@@ -272,8 +287,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
         intentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(receiver, intentFilter);
+
+        mBluetoothDevice = new mBluetoothDevice();
+
     }
 
+    /**
+     * @param
+     * @brief 蓝牙状态广播接收器
+     * @date 2020-02-11 下午 12:03
+     */
     public class BluetoothReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {

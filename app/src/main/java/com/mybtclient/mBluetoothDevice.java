@@ -1,25 +1,30 @@
 package com.mybtclient;
 
-import android.bluetooth.BluetoothDevice;
-
 import java.io.Serializable;
 
 /**
+ * 蓝牙 设备类
+ *
  * Created by QQ1778257558
  * on 2020-02-09
  */
 public class mBluetoothDevice implements Serializable {
-    private BluetoothDevice device;
+    private String name;
+    private String address;
 
-    public mBluetoothDevice(BluetoothDevice device) {
-        this.device = device;
+    public String getName() {
+        return name;
     }
 
-    public BluetoothDevice getDevice() {
-        return device;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setDevice(BluetoothDevice device) {
-        this.device = device;
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
